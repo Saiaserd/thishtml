@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字顛倒器</title>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+        }
+        .options {
+            margin: 20px 0;
+        }
+        .option {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>文字顛倒器</h1>
+    <div class="container">
+        <label for="inputText">請輸入要顛倒的文字：</label>
+        <textarea id="inputText" placeholder="在此輸入文字..."></textarea>
+        
+        <div class="options">
+            <div class="option">
+                <input type="radio" id="reverseWords" name="reverseOption" value="words" checked>
+                <label for="reverseWords">顛倒每個單字的字元順序（中文將整行顛倒）</label>
+            </div>
+            <div class="option">
+                <input type="radio" id="reverseAll" name="reverseOption" value="all">
+                <label for="reverseAll">顛倒整行文字（行與行之間順序不變）</label>
+            </div>
+            <div class="option">
+                <input type="radio" id="reverseOrder" name="reverseOption" value="order">
+                <label for="reverseOrder">顛倒單字順序（中文將整行顛倒）</label>
+            </div>
+            <p><small>注意：每一行文字會分開處理，保持原本的行順序</small></p>
+        </div>
+        
+        <button onclick="reverseText()">顛倒文字</button>
+        
+        <div class="result" id="result">
+            <p>顛倒後的文字會顯示在這裡...</p>
+        </div>
+    </div>
+
+    <script>
+        function reverseText() {
+            const inputText = document.getElementById('inputText').value;
+            const option = document.querySelector('input[name="reverseOption"]:checked').value;
+            let result = '';
+            
+            if (option === 'words') {
+                // 顛倒每個單字的字元順序（與原始Python程式相同）
+                // 先按行分割處理，保持行的順序
+                const lines = inputText.split('\n');
+                const processedLines = lines.map(line => {
+                    if (/[\u4e00-\u9fa5]/.test(line)) {
+                        // 如果包含中文，則按字元逐個顛倒
+                        return line.split('').reverse().join('');
+                    } else {
+                        // 如果是英文或其他使用空格分隔的語言
+                        const words = line.split(' ');
+                        const reversedWords = words.map(word => word.split('').reverse().join(''));
+                        return reversedWords.join(' ');
+                    }
+                });
+                result = processedLines.join('\n');
+            } else if (option === 'all') {
+                // 顛倒整段文字，但保持行的順序
+                const lines = inputText.split('\n');
+                const reversedLines = lines.map(line => line.split('').reverse().join(''));
+                result = reversedLines.join('\n');
+            } else if (option === 'order') {
+                // 顛倒單字順序，但保持行的順序
+                const lines = inputText.split('\n');
+                const processedLines = lines.map(line => {
+                    if (/[\u4e00-\u9fa5]/.test(line)) {
+                        // 如果包含中文，則按字元逐個顛倒順序
+                        return line.split('').reverse().join('');
+                    } else {
+                        // 如果是英文或其他使用空格分隔的語言
+                        return line.split(' ').reverse().join(' ');
+                    }
+                });
+                result = processedLines.join('\n');
+            }
+            
+            // 使用 pre 標籤來保留換行
+            document.getElementById('result').innerHTML = `
+                <h3>顛倒結果：</h3>
+                <pre style="white-space: pre-wrap; word-break: break-word;">${result}</pre>
+            `;
+        }
+    </script>
+</body>
+</html>
